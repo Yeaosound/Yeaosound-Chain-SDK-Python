@@ -102,10 +102,10 @@ class ysc:
         else:
             return output
 
-    def createuser(self,rsa_bits=2048,role=1,username=None,tax=0,strict_waiting = False):
+    def createuser(self,rsa_bits=4096,role=1,username=None,tax=0,strict_waiting = False):
         if username is None:
             username = tools.genuuid()
-        newkeys = rsa.newkeys(rsa_bits)
+        newkeys = rsa.newkeys(rsa_bits,poolsize=max(1,os.cpu_count()-1))
         publickey = newkeys[0]
         privatekey = newkeys[1]
         if rsa_sign.verify_key_pair(publickey,privatekey) != True:
