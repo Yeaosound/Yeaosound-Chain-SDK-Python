@@ -51,7 +51,7 @@ class ysc:
         if ret["status"] == False:
             raise Exception(ret["msg"])
         self.balance = ret["balance"]
-        return ret
+        return ret["balance"]
         
     def getheadblock(self):
         url = self.ysc_gateway_url + "/api/v1/getheadblock"
@@ -63,7 +63,7 @@ class ysc:
     
     def getblock(self,cid):
         url = self.ysc_gateway_url + "/api/v1/getblock"
-        r = requests.get(url,params={"cid":cid})
+        r = requests.get(url,data={"cid":cid})
         ret = r.json()
         if ret["status"] == False:
             raise Exception(ret["msg"])
@@ -71,7 +71,7 @@ class ysc:
 
     def gettrade(self,cid,offset):
         url = self.ysc_gateway_url + "/api/v1/gettrade"
-        r = requests.post(url,params={"cid":cid,"offset":offset})
+        r = requests.post(url,data={"cid":cid,"offset":offset})
         ret = r.json()
         if ret["status"] == False:
             raise Exception(ret["msg"])
@@ -79,7 +79,7 @@ class ysc:
 
     def getusertrade(self,depth=20):
         url = self.ysc_gateway_url + "/api/v1/getusertrade"
-        r = requests.post(url,params={"uid":self.address,"depth":depth})
+        r = requests.post(url,data={"uid":self.address,"depth":depth})
         ret = r.json()
         if ret["status"] == False:
             raise Exception(ret["msg"])
