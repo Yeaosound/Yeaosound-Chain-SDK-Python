@@ -4,14 +4,14 @@ import rsa
 import base64
 import json
 import requests
-import tools
+from .tools import genuuid,calc_md5,write_to_ipfs,load_from_ipfs
 
 def sign_trade(trade:Dict,cid,sign_method:str="SHA-256")->Dict:
     """
     Sign a trade with an rsa private key cid
     """
     if type(cid) is str:
-        rawkey = tools.load_from_ipfs(cid)
+        rawkey = load_from_ipfs(cid)
         privkey = rsa.PrivateKey.load_pkcs1(rawkey)
     else:
         privkey = cid
@@ -25,7 +25,7 @@ def verify_trade(trade:Dict,cid:str)->bool:
     """
     Verify a trade with an account cid
     """
-    rawkey = tools.load_from_ipfs(cid)
+    rawkey = load_from_ipfs(cid)
     try:
         pubkey = rsa.PublicKey.load_pkcs1(rawkey)
     except ValueError:
@@ -47,10 +47,10 @@ def verify_trade(trade:Dict,cid:str)->bool:
 def verify_key_pair(publickey,privatekey)->bool:
     try:
         if type(publickey) is str:
-            publickey = rsa.PublicKey.load_pkcs1(tools.load_from_ipfs(publickey))
+            publickey = rsa.PublicKey.load_pkcs1(load_from_ipfs(publickey))
         if type(privatekey) is str:
-            privatekey = rsa.PrivateKey.load_pkcs1(tools.load_from_ipfs(privatekey))
-        text = tools.genuuid()
+            privatekey = rsa.PrivateKey.load_pkcs1(load_from_ipfs(privatekey))
+        text = genuuid()
         try:
             if rsa.verify(text.encode(),rsa.sign(text.encode(), privatekey, 'SHA-1'),publickey) != "SHA-1":
                 logging.error("verify_key_pair failed. the key is not valid")

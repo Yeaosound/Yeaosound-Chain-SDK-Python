@@ -7,11 +7,19 @@ import time
 import json
 import subprocess
 import logging
-import configloader
 import requests
 import rsa
 import uuid
-c = configloader.config()
+
+ipfs_api = "https://upload.ipns.tech"
+ipfs_gateway = "https://gateway.ipns.tech"
+
+def setipfs(api,gateway):
+    global ipfs_gateway
+    global ipfs_api
+    ipfs_api = api
+    ipfs_gateway = gateway
+
 
 def genuuid()->str:
     """
@@ -33,7 +41,8 @@ def write_to_ipfs(string:str,cid_version=0)->str:
     """
     Write the string to ipfs and return its CID.
     """
-    ret = requests.post(url=c.getkey("ipfs_api")+"/api/v0/add?pin=true&cid-version="+str(cid_version),files={'file':string})
+    global ipfs_api
+    ret = requests.post(url=ipfs_api+"/api/v0/add?pin=true&cid-version="+str(cid_version),files={'file':string})
     cid = ret.json()["Hash"]
     return cid
 
@@ -41,7 +50,8 @@ def load_from_ipfs(cid:str)->str:
     """
     Load the content of the cid from ipfs.
     """
-    res = requests.get(url=c.getkey("ipfs_gateway")+"/ipfs/"+cid,timeout=60)
+    global ipfs_gateway
+    res = requests.get(url=ipfs_gateway+"/ipfs/"+cid,timeout=60)
     
     return res.text
 
