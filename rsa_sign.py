@@ -6,7 +6,7 @@ import json
 import requests
 import tools
 
-def sign_trade(trade:Dict,cid,sign_method:str="SHA-1")->Dict:
+def sign_trade(trade:Dict,cid,sign_method:str="SHA-256")->Dict:
     """
     Sign a trade with an rsa private key cid
     """
