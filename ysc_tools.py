@@ -182,7 +182,7 @@ class ysc:
             for i in range(0,15):
                 time.sleep(10)
                 new_block = self.getheadblock()
-                if now_block["status"] == False:
+                if new_block["status"] == False:
                     raise Exception(now_block["msg"])
                 new_block_data = new_block["data"]["data"]
                 new_block = new_block["data"]["block"]
