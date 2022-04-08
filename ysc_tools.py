@@ -104,6 +104,42 @@ class ysc:
 
         r = requests.post(self.ysc_gateway_url+"/api/v1/createdeal",data={"data":str(base64.b64encode(json_transfer.encode()),'utf-8')})
         output = r.json()
+        if strict_waiting:
+            now_block = self.getheadblock()
+            if now_block["status"] == False:
+                raise Exception(now_block["msg"])
+            now_block = now_block["data"]["block"]
+            for i in range(0,15):
+                time.sleep(10)
+                new_block = self.getheadblock()
+                if new_block["status"] == False:
+                    raise Exception(now_block["msg"])
+                new_block_data = new_block["data"]["data"]
+                new_block = new_block["data"]["block"]
+                if new_block == now_block:
+                    continue
+                offset = 0
+                for j in new_block_data["transfers"]:
+                    
+                    if j["sign"]["data"] == signed_transfer["sign"]["data"]:
+                        if j["status"] == 1:
+                            return{
+                                "status":True,
+                                "msg":"success",
+                                "block_cid":new_block+"|"+str(offset)
+                            }
+                        else:
+                            return{
+                                "status":False,
+                                "msg":j["content"]["msg"]
+                            }
+                    offset+=1
+                now_block = new_block
+            return{
+                "status":False,
+                "msg":"timeout"
+            }
+
         if output["status"] == False:
             raise Exception("Create Deal Failed: "+output["msg"])
         else:
@@ -137,6 +173,51 @@ class ysc:
 
         r = requests.post(self.ysc_gateway_url+"/api/v1/createuser",data={"data":str(base64.b64encode(json_transfer.encode()),'utf-8')})
         output = r.json()
+
+        if strict_waiting:
+            now_block = self.getheadblock()
+            if now_block["status"] == False:
+                raise Exception(now_block["msg"])
+            now_block = now_block["data"]["block"]
+            for i in range(0,15):
+                time.sleep(10)
+                new_block = self.getheadblock()
+                if now_block["status"] == False:
+                    raise Exception(now_block["msg"])
+                new_block_data = new_block["data"]["data"]
+                new_block = new_block["data"]["block"]
+                if new_block == now_block:
+                    continue
+                offset = 0
+                for j in new_block_data["transfers"]:
+                    
+                    if j["sign"]["data"] == signed_transfer["sign"]["data"]:
+                        if j["status"] == 1:
+                            return{
+                                "status":True,
+                                "msg":"success",
+                                "block_cid":new_block+"|"+str(offset),
+                                "publickey":new_publickey_cid,
+                                "privatekey":new_privatekey_cid,
+                                "username":username
+                            }
+                        else:
+                            return{
+                                "status":False,
+                                "msg":j["content"]["msg"],
+                                "publickey":new_publickey_cid,
+                                "privatekey":new_privatekey_cid,
+                                "username":username
+                            }
+                    offset+=1
+            return{
+                "status":False,
+                "msg":"timeout",
+                "publickey":new_publickey_cid,
+                "privatekey":new_privatekey_cid,
+                "username":username
+            }
+
         if output["status"] == False:
             raise Exception("Create Account Failed: "+output["msg"])
         else:
