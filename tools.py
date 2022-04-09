@@ -11,8 +11,8 @@ import requests
 import rsa
 import uuid
 
-ipfs_api = "https://upload.ipns.tech"
-ipfs_gateway = "https://gateway.ipns.tech"
+ipfs_api = ""
+ipfs_gateway = ""
 
 def setipfs(api,gateway):
     global ipfs_gateway
