@@ -95,6 +95,7 @@ class ysc:
             "value":int(value),
             "content":content
         }
+        self.getbalance()
         if self.balance < transfer["value"] + transfer["tax"] and self.role not in [0]:
             raise Exception("Insufficient Balance")
         if transfer["value"] < 0 and self.role not in [0,4]:
@@ -148,7 +149,7 @@ class ysc:
     def createuser(self,rsa_bits=4096,role=1,username=None,tax=0,strict_waiting = False):
         if username is None:
             username = genuuid()
-        newkeys = rsa.newkeys(rsa_bits,poolsize=max(1,os.cpu_count()-1))
+        newkeys = rsa.newkeys(rsa_bits)
         publickey = newkeys[0]
         privatekey = newkeys[1]
         if verify_key_pair(publickey,privatekey) != True:
